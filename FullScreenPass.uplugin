@@ -2,11 +2,11 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "FullScreenPass",
+	"FriendlyName": "Full Screen Pass",
 	"Description": "Demo of a full screen pass plugin",
-	"Category": "Other",
+	"Category": "Graphics",
 	"CreatedBy": "Ivan Belyavtsev",
-	"CreatedByURL": "",
+	"CreatedByURL": "https://djbelyak.ru",
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "",
@@ -18,7 +18,7 @@
 		{
 			"Name": "FullScreenPass",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PostConfigInit"
 		}
 	]
 }
