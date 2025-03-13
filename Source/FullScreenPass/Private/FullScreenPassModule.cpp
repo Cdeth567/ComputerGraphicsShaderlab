@@ -1,25 +1,29 @@
 #include "FullScreenPassModule.h"
+#include "FullScreenPassLog.h"
 
 #include "Interfaces/IPluginManager.h"
 #include "Misc/Paths.h"
-#include "ShaderCore.h"
-#include "FullScreenPassLog.h"
+#include "SceneViewExtension.h"
+
 
 #define LOCTEXT_NAMESPACE "FFullScreenPassModule"
 
 void FFullScreenPassModule::StartupModule()
 {
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
+	UE_LOG(FullScreenPass, Log, TEXT("FFullScreenPassModule startup"));
+
 	FString PluginShaderDir = FPaths::Combine(IPluginManager::Get().FindPlugin(TEXT("FullScreenPass"))->GetBaseDir(), TEXT("Shaders"));
 	AddShaderSourceDirectoryMapping(TEXT("/FullScreenPass"), PluginShaderDir);
-	UE_LOG(FullScreenPass, Log, TEXT("Module startup"));
+	
+	FCoreDelegates::OnPostEngineInit.AddLambda([this]() {
+		ViewExtension = FSceneViewExtensions::NewExtension<FFullScreenPassSceneViewExtension>();
+	});
+
 }
 
 void FFullScreenPassModule::ShutdownModule()
 {
-	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-	// we call this function before unloading the module.
-	UE_LOG(FullScreenPass, Log, TEXT("Module shutdown"));
+	UE_LOG(FullScreenPass, Log, TEXT("FFullScreenPassModule shutdown"));
 }
 
 #undef LOCTEXT_NAMESPACE
