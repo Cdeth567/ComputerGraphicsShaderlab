@@ -1,6 +1,8 @@
 #include "DebandPluginModule.h"
 #include "DebandPluginLog.h"
 #include "Interfaces/IPluginManager.h"
+#include "DebandPluginExtension.h"
+#include "SceneViewExtension.h"
 
 #define LOCTEXT_NAMESPACE "FDebandPluginModule"
 
@@ -8,15 +10,17 @@ void FDebandPluginModule::StartupModule()
 {
     UE_LOG(LogDebandPlugin, Log, TEXT("Deband plugin startup")); 
 
-    // Map shader directory
+    // Map shader directory (исправлен путь маппинга)
     FString PluginShaderDir = FPaths::Combine(
         IPluginManager::Get().FindPlugin(TEXT("DebandPlugin"))->GetBaseDir(), 
         TEXT("Shaders")
     );
-    AddShaderSourceDirectoryMapping(TEXT("/Plugin/DebandPlugin"), PluginShaderDir);
+    AddShaderSourceDirectoryMapping(TEXT("/DebandPlugin"), PluginShaderDir); // Убрано /Plugin/
 
-    // Initialize extension
-    ViewExtension = FSceneViewExtensions::NewExtension<FDebandPluginSceneViewExtension>();
+    // Отложенная инициализация расширения (как в рабочем примере)
+    FCoreDelegates::OnPostEngineInit.AddLambda([this]() {
+        ViewExtension = FSceneViewExtensions::NewExtension<FDebandPluginExtension>();
+    });
 }
 
 void FDebandPluginModule::ShutdownModule()

@@ -2,10 +2,11 @@
     "FileVersion": 3,
     "Version": 1,
     "VersionName": "1.0",
+    "EngineVersion": "5.5.0",
     "FriendlyName": "Deband Plugin",
     "Description": "Marty McFly's Deband shader implementation for Unreal Engine",
     "Category": "Rendering",
-    "CreatedBy": "Valeriia Kolesnikova",
+    "CreatedBy": "Ivan Belyavtsev",
     "CreatedByURL": "",
     "Modules": [
         {
