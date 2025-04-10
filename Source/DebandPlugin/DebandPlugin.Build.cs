@@ -10,14 +10,22 @@ public class FullScreenPass : ModuleRules
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
-				// ... add public include paths required here ...
+				"Core",
+				"Engine",
+				"RenderCore",
+				"Renderer",
+				"RHI",
+				"Projects"
 			}
 			);
 				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
-				// ... add other private include paths required here ...
+				"Engine", 
+				"RenderCore", 
+				"Renderer", 
+				"RHI"
 			}
 			);
 			
@@ -26,7 +34,10 @@ public class FullScreenPass : ModuleRules
 			new string[]
 			{
 				"Core",
-				// ... add other public dependencies that you statically link with here ...
+				"Engine",
+				"Renderer",
+				"RenderCore",
+				"RHI",
 			}
 			);
 			

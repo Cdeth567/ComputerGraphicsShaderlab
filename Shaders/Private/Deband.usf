@@ -1,0 +1,62 @@
+// Deband.usf
+#include "/Engine/Public/Platform.ush"
+#include "/Engine/Public/ScreenPass.ush"
+
+void MainVS(
+    in uint VertexId : SV_VertexID,
+    out float4 OutPosition : SV_Position,
+    out float2 OutUV : TEXCOORD0
+)
+{
+    PostProcessVS(VertexId, OutPosition, OutUV);
+}
+
+// Uniform parameters (will be set from C++)
+float SearchRadius;
+float BitDepth;
+bool AutomateBitDepth;
+int DebandMode;
+bool SkyOnly;
+
+// Main pixel shader
+void MainPS(
+    in float4 InPosition : SV_Position,
+    in float2 InUV : TEXCOORD0,
+    out float3 OutColor : SV_Target0
+)
+{
+    // Sample scene texture (UE equivalent of qUINT::sBackBufferTex)
+    OutColor = Texture2DSample(SceneTexture, SceneTextureSampler, InUV).rgb;
+    
+    const float2 magicdot = float2(0.75487766624669276, 0.569840290998);
+    const float3 magicadd = float3(0, 0.025, 0.0125) * dot(magicdot, 1);
+    float3 dither = frac(dot(InPosition.xy, magicdot) + magicadd);
+
+    // Skip if sky-only mode enabled and not sky
+    if(SkyOnly)
+    {
+        float depth = CalcSceneDepth(InUV);
+        if(depth < 0.98) return;
+    }
+
+    float actualBitDepth = AutomateBitDepth ? 8.0 : BitDepth; // UE typically uses 8-bit by default
+    float lsb = rcp(exp2(actualBitDepth) - 1.0);
+
+    if(DebandMode == 2) // Deband mode
+    {
+        float2 shift;
+        sincos(6.283 * 30.694 * dither.x, shift.x, shift.y);
+        shift = shift * sqrt(dither.y);
+
+        float3 scatter = Texture2DSampleLevel(SceneTexture, SceneTextureSampler, InUV + shift * 0.025 * SearchRadius, 0).rgb;
+        float4 diff; 
+        diff.rgb = abs(OutColor.rgb - scatter);
+        diff.w = max(max(diff.x, diff.y), diff.z);
+
+        OutColor = lerp(OutColor, scatter, diff.w <= lsb);
+    }
+    else if(DebandMode == 1) // Dither mode
+    {
+        OutColor += (dither - 0.5) * lsb;
+    }
+}
