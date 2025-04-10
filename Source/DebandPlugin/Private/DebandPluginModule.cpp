@@ -10,14 +10,12 @@ void FDebandPluginModule::StartupModule()
 {
     UE_LOG(LogDebandPlugin, Log, TEXT("Deband plugin startup")); 
 
-    // Map shader directory (исправлен путь маппинга)
     FString PluginShaderDir = FPaths::Combine(
         IPluginManager::Get().FindPlugin(TEXT("DebandPlugin"))->GetBaseDir(), 
         TEXT("Shaders")
     );
-    AddShaderSourceDirectoryMapping(TEXT("/DebandPlugin"), PluginShaderDir); // Убрано /Plugin/
+    AddShaderSourceDirectoryMapping(TEXT("/DebandPlugin"), PluginShaderDir);
 
-    // Отложенная инициализация расширения (как в рабочем примере)
     FCoreDelegates::OnPostEngineInit.AddLambda([this]() {
         ViewExtension = FSceneViewExtensions::NewExtension<FDebandPluginExtension>();
     });
