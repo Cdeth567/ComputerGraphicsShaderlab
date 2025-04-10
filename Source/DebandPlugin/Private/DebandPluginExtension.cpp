@@ -3,7 +3,6 @@
 #include "FXRenderingUtils.h"
 #include "PostProcess/PostProcessInputs.h"
 
-// Console variables для управления дебандингом
 static TAutoConsoleVariable<int32> CVarDebandEnabled(
     TEXT("r.Deband"),
     1,
@@ -38,16 +37,13 @@ public:
         Inputs.Validate();
         const FIntRect ViewRect = UE::FXRenderingUtils::GetRawViewRectUnsafe(View);
         
-        // Получаем входную текстуру
         FScreenPassTexture SceneColor((*Inputs.SceneTextures)->SceneColorTexture, ViewRect);
         if (!SceneColor.IsValid()) return;
 
-        // Создаем выходной Render Target
         FRDGTextureDesc OutputDesc = SceneColor.Texture->Desc;
-        OutputDesc.Format = PF_FloatRGBA; // Для работы с HDR
+        OutputDesc.Format = PF_FloatRGBA;
         FRDGTexture* DebandedTexture = GraphBuilder.CreateTexture(OutputDesc, TEXT("DebandedTexture"));
         
-        // Настройка параметров шейдера
         FGlobalShaderMap* ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
         TShaderMapRef<FDebandVS> VertexShader(ShaderMap);
         TShaderMapRef<FDebandPS> PixelShader(ShaderMap);
@@ -59,7 +55,6 @@ public:
         Parameters->Iterations = CVarDebandIterations->GetInt();
         Parameters->RenderTargets[0] = FRenderTargetBinding(DebandedTexture, ERenderTargetLoadAction::EClear);
 
-        // Рендеринг эффекта
         AddDrawScreenPass(
             GraphBuilder,
             RDG_EVENT_NAME("DebandShader"),
@@ -71,31 +66,6 @@ public:
             Parameters
         );
 
-        // Копируем результат обратно в основную текстуру
         AddCopyTexturePass(GraphBuilder, DebandedTexture, SceneColor.Texture);
     }
 };
-
-// Файл DebandShaders.usf
-// #include "/Plugins/DebandPlugin/Shaders/Private/Deband.usf"
-
-// Texture2D InputTexture;
-// SamplerState InputSampler;
-
-// float Strength;
-// int Iterations;
-
-// float4 FDebandPS(FDebandVSOutput In) : SV_Target0
-// {
-//     float2 UV = In.TextureUV;
-//     float4 color = InputTexture.SampleLevel(InputSampler, UV, 0);
-    
-//     // Простейший алгоритм дебандинга
-//     for(int i = 0; i < Iterations; i++)
-//     {
-//         float2 offset = float2(Strength * (i + 1), 0);
-//         color += InputTexture.SampleLevel(InputSampler, UV + offset, 0);
-//         color += InputTexture.SampleLevel(InputSampler, UV - offset, 0);
-//     }
-//     return color / (Iterations * 2 + 1);
-// }
