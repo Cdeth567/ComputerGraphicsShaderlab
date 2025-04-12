@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class FullScreenPass : ModuleRules
+public class DebandPlugin : ModuleRules
 {
-	public FullScreenPass(ReadOnlyTargetRules Target) : base(Target)
+	public DebandPlugin(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		

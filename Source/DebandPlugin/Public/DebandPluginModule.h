@@ -10,5 +10,5 @@ public:
     virtual void ShutdownModule() override;
 
 private:
-    TSharedPtr<class FDebandPluginSceneViewExtension, ESPMode::ThreadSafe> ViewExtension;  // Renamed
+    TSharedPtr<class FDebandPluginSceneViewExtension, ESPMode::ThreadSafe> ViewExtension;
 };
