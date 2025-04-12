@@ -1,62 +1,61 @@
 // Deband.usf
-#include "/Engine/Public/Platform.ush"
-#include "/Engine/Public/ScreenPass.ush"
+#include "/Engine/Private/Common.ush"
+#include "/Engine/Private/SceneTexturesCommon.ush"
+
 
 void MainVS(
-    in uint VertexId : SV_VertexID,
-    out float4 OutPosition : SV_Position,
-    out float2 OutUV : TEXCOORD0
-)
+    in float4 InPosition : ATTRIBUTE0,
+	in float2 InTexCoord : ATTRIBUTE1,
+	out noperspective float4 OutUVAndScreenPos : TEXCOORD0,
+	out float4 OutPosition : SV_POSITION)
 {
-    PostProcessVS(VertexId, OutPosition, OutUV);
+    DrawRectangle(InPosition, InTexCoord, OutPosition, OutUVAndScreenPos);
 }
 
-// Uniform parameters (will be set from C++)
+// Uniform parameters
 float SearchRadius;
 float BitDepth;
-bool AutomateBitDepth;
+int AutomateBitDepth;
 int DebandMode;
-bool SkyOnly;
+int SkyOnly;
 
 // Main pixel shader
-void MainPS(
+float4 MainPS(
     in float4 InPosition : SV_Position,
-    in float2 InUV : TEXCOORD0,
-    out float3 OutColor : SV_Target0
-)
+    in float4 InUV : TEXCOORD0
+) : SV_Target0
 {
-    // Sample scene texture (UE equivalent of qUINT::sBackBufferTex)
-    OutColor = Texture2DSample(SceneTexture, SceneTextureSampler, InUV).rgb;
+    float3 OutColor = CalcSceneColor(InUV.xy);
     
     const float2 magicdot = float2(0.75487766624669276, 0.569840290998);
     const float3 magicadd = float3(0, 0.025, 0.0125) * dot(magicdot, 1);
     float3 dither = frac(dot(InPosition.xy, magicdot) + magicadd);
 
-    // Skip if sky-only mode enabled and not sky
-    if(SkyOnly)
+    if(SkyOnly == 1)
     {
-        float depth = CalcSceneDepth(InUV);
-        if(depth < 0.98) return;
+        float depth = CalcSceneDepth(InUV.xy);
+        if(depth < 0.98) return float4(OutColor, 1.f);
     }
 
-    float actualBitDepth = AutomateBitDepth ? 8.0 : BitDepth; // UE typically uses 8-bit by default
+    float actualBitDepth = AutomateBitDepth == 1 ? 8.0 : BitDepth;
     float lsb = rcp(exp2(actualBitDepth) - 1.0);
 
-    if(DebandMode == 2) // Deband mode
+    if(DebandMode == 2)
     {
         float2 shift;
         sincos(6.283 * 30.694 * dither.x, shift.x, shift.y);
         shift = shift * sqrt(dither.y);
 
-        float3 scatter = Texture2DSampleLevel(SceneTexture, SceneTextureSampler, InUV + shift * 0.025 * SearchRadius, 0).rgb;
+        float3 scatter = CalcSceneColor(InUV.xy + shift * 0.025 * SearchRadius);
         float4 diff; 
         diff.rgb = abs(OutColor.rgb - scatter);
         diff.w = max(max(diff.x, diff.y), diff.z);
 
         OutColor = lerp(OutColor, scatter, diff.w <= lsb);
     }
-    else if(DebandMode == 1) // Dither mode
+    else if(DebandMode == 1)
     {
         OutColor += (dither - 0.5) * lsb;
     }
+    return float4(OutColor, 1.f);
 }

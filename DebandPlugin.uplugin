@@ -5,7 +5,7 @@
     "FriendlyName": "Deband Plugin",
     "Description": "Marty McFly's Deband shader implementation for Unreal Engine",
     "Category": "Rendering",
-    "CreatedBy": "Valeriia Kolesnikova",
+    "CreatedBy": "Ivan Belyavtsev",
     "CreatedByURL": "",
     "Modules": [
         {
