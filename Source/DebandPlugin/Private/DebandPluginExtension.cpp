@@ -3,22 +3,30 @@
 #include "FXRenderingUtils.h"
 #include "PostProcess/PostProcessInputs.h"
 
-static TAutoConsoleVariable<int32> CVarDebandEnabled(
-    TEXT("r.Deband"),
-    1,
-    TEXT("Enable Debanding post-process\n")
-    TEXT("0: Disabled\n")
-    TEXT("1: Enabled (default)"));
+static TAutoConsoleVariable<float> SearchRadius(
+    TEXT("r.Deband.SearchRadius"),
+    0.5f,
+    TEXT("Debanding Search Radius")
 
-static TAutoConsoleVariable<float> CVarDebandStrength(
-    TEXT("r.Deband.Strength"),
-    0.0025f,
-    TEXT("Debanding effect intensity (0.001-0.01)"));
+static TAutoConsoleVariable<int32> BitDepth(
+    TEXT("r.Deband.BitDepth"),
+    8,
+    TEXT("Bit depth of data to be debanded"));
 
-static TAutoConsoleVariable<int32> CVarDebandIterations(
-    TEXT("r.Deband.Iterations"),
-    3,
-    TEXT("Number of deband iterations (1-5)"));
+static TAutoConsoleVariable<bool> AutomateBitDepth(
+    TEXT("r.Deband.AutomateBitDepth"),
+    true,
+    TEXT("Automatic bit depth detection"));
+
+static TAutoConsoleVariable<int32> DebandMode(
+    TEXT("r.Deband.DebandMode"),
+    2,
+    TEXT("Dither mode"));
+
+static TAutoConsoleVariable<bool> SkyOnly(
+    TEXT("r.Deband.SkyOnly"),
+    false,
+    TEXT("Apply to sky only"));
 
 FDebandPluginSceneViewExtension::FDebandPluginSceneViewExtension(const FAutoRegister& AutoRegister) :
 FSceneViewExtensionBase(AutoRegister)
