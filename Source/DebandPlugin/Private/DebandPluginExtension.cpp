@@ -20,14 +20,18 @@ static TAutoConsoleVariable<int32> CVarDebandIterations(
     3,
     TEXT("Number of deband iterations (1-5)"));
 
-FDebandPluginSceneViewExtension::FDebandPluginSceneViewExtension(const FAutoRegister& AutoRegister) :
-FSceneViewExtensionBase(AutoRegister)
-{
 
-}
-
-void FDebandPluginSceneViewExtension::PrePostProcessPass_RenderThread(FRDGBuilder& GraphBuilder, const FSceneView& View, const FPostProcessingInputs& Inputs)
+class FDebandSceneViewExtension : public FSceneViewExtensionBase
 {
+public:
+    FDebandSceneViewExtension(const FAutoRegister& AutoRegister)
+        : FSceneViewExtensionBase(AutoRegister) {};
+
+    virtual void PrePostProcessPass_RenderThread(
+        FRDGBuilder& GraphBuilder,
+        const FSceneView& View,
+        const FPostProcessingInputs& Inputs) override
+    {
         if (CVarDebandEnabled->GetInt() == 0) return;
 
         Inputs.Validate();
@@ -63,4 +67,5 @@ void FDebandPluginSceneViewExtension::PrePostProcessPass_RenderThread(FRDGBuilde
         );
 
         AddCopyTexturePass(GraphBuilder, DebandedTexture, SceneColor.Texture);
+    }
 };

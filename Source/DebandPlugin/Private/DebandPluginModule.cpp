@@ -2,9 +2,8 @@
 #include "DebandPluginLog.h"
 
 #include "Interfaces/IPluginManager.h"
+#include "DebandPluginExtension.h"
 #include "SceneViewExtension.h"
-#include "Misc/Paths.h"
-#include "ShaderCore.h"
 
 #define LOCTEXT_NAMESPACE "FDebandPluginModule"
 
@@ -19,7 +18,7 @@ void FDebandPluginModule::StartupModule()
     AddShaderSourceDirectoryMapping(TEXT("/DebandPlugin"), PluginShaderDir);
 
     FCoreDelegates::OnPostEngineInit.AddLambda([this]() {
-        ViewExtension = FSceneViewExtensions::NewExtension<FDebandPluginSceneViewExtension>();
+        ViewExtension = FSceneViewExtensions::NewExtension<FDebandPluginExtension>();
     });
 }
 

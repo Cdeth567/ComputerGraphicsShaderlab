@@ -27,10 +27,5 @@ public:
         SHADER_PARAMETER(float, Strength)
         SHADER_PARAMETER(int32, Iterations)
         RENDER_TARGET_BINDING_SLOTS()
-        SHADER_PARAMETER(float, SearchRadius)
-        SHADER_PARAMETER(float, BitDepth)
-        SHADER_PARAMETER(int, AutomateBitDepth)
-        SHADER_PARAMETER(int, DebandMode)
-        SHADER_PARAMETER(int, SkyOnly)
     END_SHADER_PARAMETER_STRUCT()
 };
