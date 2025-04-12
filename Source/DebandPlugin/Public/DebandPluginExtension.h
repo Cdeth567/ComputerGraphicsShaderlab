@@ -1,7 +1,7 @@
 #pragma once
 #include "SceneViewExtension.h"
 
-class FDebandPluginSceneViewExtension : public FSceneViewExtensionBase
+class DEBANDPLUGIN_API FDebandPluginSceneViewExtension : public FSceneViewExtensionBase
 {
 public:
     FDebandPluginSceneViewExtension(const FAutoRegister& AutoRegister);

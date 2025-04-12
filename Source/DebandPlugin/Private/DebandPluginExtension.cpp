@@ -63,4 +63,9 @@ void FDebandPluginSceneViewExtension::PrePostProcessPass_RenderThread(FRDGBuilde
         );
 
         AddCopyTexturePass(GraphBuilder, DebandedTexture, SceneColor.Texture);
+<<<<<<< HEAD
 };
+=======
+    }
+};
+>>>>>>> de56a78071da40d76458a4a6976d279089684d25

@@ -19,7 +19,11 @@ void FDebandPluginModule::StartupModule()
     AddShaderSourceDirectoryMapping(TEXT("/DebandPlugin"), PluginShaderDir);
 
     FCoreDelegates::OnPostEngineInit.AddLambda([this]() {
+<<<<<<< HEAD
         ViewExtension = FSceneViewExtensions::NewExtension<FDebandPluginSceneViewExtension>();
+=======
+        ViewExtension = FSceneViewExtensions::NewExtension<FDebandPluginExtension>();
+>>>>>>> de56a78071da40d76458a4a6976d279089684d25
     });
 }
 
