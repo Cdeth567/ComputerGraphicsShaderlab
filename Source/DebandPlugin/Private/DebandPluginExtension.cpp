@@ -3,6 +3,21 @@
 #include "FXRenderingUtils.h"
 #include "PostProcess/PostProcessInputs.h"
 
+static TAutoConsoleVariable<int32> CVarDebandIterations(
+  TEXT("r.Deband.Iterations"),
+  4,
+  TEXT("Number of debanding iterations"));
+
+static TAutoConsoleVariable<float> CVarDebandStrength(
+  TEXT("r.Deband.Strenght"),
+  0.5f,
+  TEXT("Debanding strength"));
+
+static TAutoConsoleVariable<int> CVarDebandEnabled(
+    TEXT("r.Deband.Enabled"),
+    1,
+    TEXT("Enable/disable debanding"));
+
 static TAutoConsoleVariable<float> SearchRadius(
     TEXT("r.Deband.SearchRadius"),
     0.5f,
