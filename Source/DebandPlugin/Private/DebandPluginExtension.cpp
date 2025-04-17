@@ -6,9 +6,9 @@
 static TAutoConsoleVariable<float> SearchRadius(
     TEXT("r.Deband.SearchRadius"),
     0.5f,
-    TEXT("Debanding Search Radius")
+    TEXT("Debanding Search Radius"));
 
-static TAutoConsoleVariable<int32> BitDepth(
+static TAutoConsoleVariable<int> BitDepth(
     TEXT("r.Deband.BitDepth"),
     8,
     TEXT("Bit depth of data to be debanded"));
@@ -18,7 +18,7 @@ static TAutoConsoleVariable<bool> AutomateBitDepth(
     true,
     TEXT("Automatic bit depth detection"));
 
-static TAutoConsoleVariable<int32> DebandMode(
+static TAutoConsoleVariable<int> DebandMode(
     TEXT("r.Deband.DebandMode"),
     2,
     TEXT("Dither mode"));
