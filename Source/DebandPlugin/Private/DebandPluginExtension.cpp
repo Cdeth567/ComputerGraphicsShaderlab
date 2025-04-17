@@ -36,44 +36,39 @@ FSceneViewExtensionBase(AutoRegister)
 
 void FDebandPluginSceneViewExtension::PrePostProcessPass_RenderThread(FRDGBuilder& GraphBuilder, const FSceneView& View, const FPostProcessingInputs& Inputs)
 {
-        if (CVarDebandEnabled->GetInt() == 0) return;
+    if (CVarDebandEnabled->GetInt() == 0) return;
 
-        Inputs.Validate();
-        const FIntRect ViewRect = UE::FXRenderingUtils::GetRawViewRectUnsafe(View);
-        
-        FScreenPassTexture SceneColor((*Inputs.SceneTextures)->SceneColorTexture, ViewRect);
-        if (!SceneColor.IsValid()) return;
+    Inputs.Validate();
+    const FIntRect ViewRect = UE::FXRenderingUtils::GetRawViewRectUnsafe(View);
+    
+    FScreenPassTexture SceneColor((*Inputs.SceneTextures)->SceneColorTexture, ViewRect);
+    if (!SceneColor.IsValid()) return;
 
-        FRDGTextureDesc OutputDesc = SceneColor.Texture->Desc;
-        OutputDesc.Format = PF_FloatRGBA;
-        FRDGTexture* DebandedTexture = GraphBuilder.CreateTexture(OutputDesc, TEXT("DebandedTexture"));
-        
-        FGlobalShaderMap* ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
-        TShaderMapRef<FDebandVS> VertexShader(ShaderMap);
-        TShaderMapRef<FDebandPS> PixelShader(ShaderMap);
+    FRDGTextureDesc OutputDesc = SceneColor.Texture->Desc;
+    OutputDesc.Format = PF_FloatRGBA;
+    FRDGTexture* DebandedTexture = GraphBuilder.CreateTexture(OutputDesc, TEXT("DebandedTexture"));
+    
+    FGlobalShaderMap* ShaderMap = GetGlobalShaderMap(GMaxRHIFeatureLevel);
+    TShaderMapRef<FDebandVS> VertexShader(ShaderMap);
+    TShaderMapRef<FDebandPS> PixelShader(ShaderMap);
 
-        FDebandPS::FParameters* Parameters = GraphBuilder.AllocParameters<FDebandPS::FParameters>();
-        Parameters->InputTexture = SceneColor.Texture;
-        Parameters->InputSampler = TStaticSamplerState<SF_Bilinear>::GetRHI();
-        Parameters->Strength = CVarDebandStrength->GetFloat();
-        Parameters->Iterations = CVarDebandIterations->GetInt();
-        Parameters->RenderTargets[0] = FRenderTargetBinding(DebandedTexture, ERenderTargetLoadAction::EClear);
+    FDebandPS::FParameters* Parameters = GraphBuilder.AllocParameters<FDebandPS::FParameters>();
+    Parameters->InputTexture = SceneColor.Texture;
+    Parameters->InputSampler = TStaticSamplerState<SF_Bilinear>::GetRHI();
+    Parameters->Strength = CVarDebandStrength->GetFloat();
+    Parameters->Iterations = CVarDebandIterations->GetInt();
+    Parameters->RenderTargets[0] = FRenderTargetBinding(DebandedTexture, ERenderTargetLoadAction::EClear);
 
-        AddDrawScreenPass(
-            GraphBuilder,
-            RDG_EVENT_NAME("DebandShader"),
-            View,
-            FScreenPassTextureViewport(SceneColor),
-            FScreenPassTextureViewport(DebandedTexture),
-            VertexShader,
-            PixelShader,
-            Parameters
-        );
+    AddDrawScreenPass(
+        GraphBuilder,
+        RDG_EVENT_NAME("DebandShader"),
+        View,
+        FScreenPassTextureViewport(SceneColor),
+        FScreenPassTextureViewport(DebandedTexture),
+        VertexShader,
+        PixelShader,
+        Parameters
+    );
 
-        AddCopyTexturePass(GraphBuilder, DebandedTexture, SceneColor.Texture);
-<<<<<<< HEAD
+    AddCopyTexturePass(GraphBuilder, DebandedTexture, SceneColor.Texture);
 };
-=======
-    }
-};
->>>>>>> de56a78071da40d76458a4a6976d279089684d25
